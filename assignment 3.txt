@@ -1,0 +1,65 @@
+joins assignment-3
+Write a query to select employees and their corresponding managers and their salaries
+2. Write a query to show count of employees under each manager in descending order
+3. Find the count of employees in each department
+4. Write an SQL query to display employees who earn more than the average salary in that company
+5. Find the maximum salary from each department.
+6. Display the managers and the reporting employees who work in different departments
+
+Answers:
+
+1. Write a query to select employees and their corresponding managers and their salaries
+
+mysql> SELECT e.employee_id AS employee_id, 
+e.first_name AS employee_first_name, 
+e.last_name AS employee_last_name_lname, e.salary AS employee_salary, 
+m.employee_id AS manager_id, 
+m.first_name AS manager_firsntame,
+m.last_name AS manager_lastname,
+m.salary AS manager_salary FROM  employee e 
+LEFT JOIN employee m ON e.manager_id = m.employee_id;
+
+
+2. Write a query to show count of employees under each manager in descending order
+
+mysql> SELECT mgr.employee_id AS manager_id, mgr.first_name AS manager_first_name, 
+mgr.last_name AS manager_last_name, COUNT(emp.employee_id) AS num_employee FROM employee emp 
+JOIN employee mgr ON emp.manager_id = mgr.employee_id GROUP BY mgr.employee_id, mgr.first_name, mgr.last_name ORDER BY num_employee DESC;
+
+
+
+3.Find the count of employees in each department
+
+mysql> SELECT     d.department_id,    d.department_name, 
+COUNT(e.employee_id) AS num_employee FROM  departments d 
+LEFT JOIN  employee e ON d.department_id = e.department_id 
+GROUP BY d.department_id, d.department_name 
+ORDER BY  d.department_id;
+
+
+4.Write an SQL query to display employees who earn more than the average salary in that company
+
+mysql> SELECT employee_id, first_name, last_name, salary FROM  employee WHERE  salary > (SELECT AVG(salary) FROM employee);
+
+
+5.Find the maximum salary from each department.
+
+mysql> SELECT d.department_id,    d.department_name,  MAX(e.salary) AS max_salary FROM  departments d 
+JOIN   employee e ON d.department_id = e.department_id 
+GROUP BY  d.department_id, d.department_name ORDER BY d.department_id;
+
+
+
+6. Display the managers and the reporting employees who work in different departments
+
+
+mysql> SELECT mgr.employee_id AS manager_id, 
+mgr.first_name AS manager_first_name,
+mgr.last_name AS manager_last_name, 
+mgr.department_id AS manager_department_id,
+emp.employee_id AS employee_id, 
+emp.first_name AS employee_first_name,
+emp.last_name AS employee_last_name,
+emp.department_id AS employee_department_id FROM  employee mgr
+JOIN  employee emp ON mgr.employee_id = emp.manager_id 
+WHERE mgr.department_id <> emp.department_id ORDER BY mgr.employee_id,
